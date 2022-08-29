@@ -1,7 +1,6 @@
 import { useRef, useState} from 'react';
 import CustomInput from './CustomInput';
 
-
 const Input = () => {
 
     const [value, setValue] = useState("green");

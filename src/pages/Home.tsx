@@ -1,15 +1,10 @@
-import {useState, 
-        useEffect,
-        useCallback, 
-        useMemo,
-      } from 'react';
-import React from 'react';
-import Header from '../components/Header';
-import GoodList from '../components/GoodList';
-import BasketList from '../components/BasketList';
-import Search from '../components/Search';
-import Input from '../components/Input';
+import React, {useState, useEffect, useCallback, useMemo} from 'react';
 
+import Header from '../components/Header/Header';
+import GoodList from '../components/GoodList/GoodList';
+import BasketList from '../components/BasketList/BasketList';
+import Search from '../components/Search/Search';
+import Input from '../components/Input/Input';
 
 interface Item  {
   id: number,
@@ -19,23 +14,19 @@ interface Item  {
   imgUrl: string,
   quantity: number,
   checked: boolean
-}
-
+};
 
 export type MyBasketContext = {
   isBasketShow : boolean,
   handleBasketShow: () => void,
-}
-
+};
 
 export const BasketContext = React.createContext<MyBasketContext>({
   isBasketShow: false,
   handleBasketShow: () => {}
-  
 });
 
 const Home = () => {
-  
   
   const [goods, setGoods] = useState<Item[]>([]);
   const [orders, setOrders] = useState<Item[]>([]);
@@ -43,82 +34,76 @@ const Home = () => {
 
   const orderChange = () => {
     console.log("Favorites has changed")
-  }
+  };
 
+  useMemo(()=> orderChange(), []);
 
-   useMemo(()=> orderChange(), [orders])
-
-  
- 
   const handleBasketShow = useCallback(()=> {
     setBasketShow (!isBasketShow);
-  }, [isBasketShow])
+  }, [isBasketShow]);
 
-
-
-  const addToBasket  = (item :Item) => {
+  const addToBasket  = (item: Item) => {
     const itemIndex = orders.findIndex(el => el.id === item.id);
 
     if (itemIndex < 0) {
       const newItem = {
         ...item,
         quantity : 1
-      }
-      setOrders([...orders, newItem])
+      };
+      setOrders([...orders, newItem]);
     } else {
       const newOrder = [...orders];
       newOrder[itemIndex].quantity++;
-      setOrders(newOrder)
-
-    }
-  }
+      setOrders(newOrder);
+    };
+  };
 
   const removeOrder = (id: number) => {
-    const newOrder = orders.filter(item => item.id !== id)
-    setOrders(newOrder)
-  }
-
+    const newOrder = orders.filter(item => item.id !== id);
+    setOrders(newOrder);
+  };
 
   const incQuantity = (id :number) => {
     const newOrder = orders.map(el => {
       if(el.id === id) el.quantity++;
       return el
-    })
+    });
     setOrders(newOrder);
-  }
-
+  };
 
   const decrQuantity = (id : number) => {
     const newOrder = orders.map(el => {
       if(el.id === id) el.quantity = el.quantity>1 ? el.quantity = el.quantity - 1 : 1;
       return el;
-    })
+    });
     setOrders(newOrder);
-  }
-
+  };
 
   useEffect(()=> {
     fetch("http://localhost:3000/goods")
-            .then(response => response.json())
-            .then(json => setGoods(json))
-  }, [])
-
-  console.log(isBasketShow)
+    .then(response => response.json())
+    .then(json => setGoods(json))
+  }, []);
 
   return (
     <div className="Home">
       <BasketContext.Provider value={{isBasketShow, handleBasketShow}}>
-          <Header/> 
+        <Header/> 
       </BasketContext.Provider>
       <Search/>
       <GoodList goods = {goods} addToBasket = {addToBasket}/>
       {
-          isBasketShow &&  <BasketList orders = {orders}  incQuantity = {incQuantity} decrQuantity = {decrQuantity} removeOrder = {removeOrder} handleBasketShow = {handleBasketShow}/>
+        isBasketShow && <BasketList 
+          orders = {orders} 
+          incQuantity = {incQuantity} 
+          decrQuantity = {decrQuantity} 
+          removeOrder = {removeOrder} 
+          handleBasketShow = {handleBasketShow}
+        />
       }
-       <Input/>
+      <Input/>
     </div>
-   
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

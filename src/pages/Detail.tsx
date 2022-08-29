@@ -1,16 +1,12 @@
-import {useParams} from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
-
-type Props = {}
-
-const Detail = (props: Props) => {
+const Detail = () => {
 
   let { id } = useParams();
-  console.log(id)
 
   return (
     <div>Detail {id}</div>
-  )
-}
+  );
+};
 
-export default Detail
+export default Detail;
